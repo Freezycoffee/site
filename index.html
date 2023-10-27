@@ -1,0 +1,153 @@
+<!DOCTYPE HTML>
+<!--
+	Astral by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Khofi Alfian</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="assets/css/main.css" />
+		<link rel="icon" href="images\favicon.ico">
+		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper-->
+			<div id="wrapper">
+
+				<!-- Nav -->
+					<nav id="nav">
+						<a href="#" class="icon solid fa-home"><span>Home</span></a>
+						<a href="#work" class="icon solid fa-folder"><span>Work</span></a>
+						<a href="#contact" class="icon solid fa-envelope"><span>Contact</span></a>
+						<a href="https://twitter.com/AlfianKhofi" class="icon brands fa-twitter" target="_blank"><span>Twitter</span></a>
+					</nav>
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- Me -->
+							<article id="home" class="panel intro">
+								<header>
+									<h1>Khofi Alfian</h1>
+									<p>Data Analyst, Machine Learning and Liverpool FC Fans</p>
+								</header>
+								<a href="https://linkedin.com/in/khofi-alfian-b27414182/" class="jumplink pic" target="_blank">
+									<img src="images/me.jpg" alt="" />
+								</a>
+							</article>
+						<!-- Work -->
+							<article id="work" class="panel">
+								<header>
+									<h2>Work</h2><br>
+									<h1><strong>Build an Expected Goals(xG) model for Indonesian Liga 1</strong></h1>
+								</header>
+								<p>
+									Expected goals (xG) is a metric used in football to measure the quality of a chance by calculating the likelihood that it will be scored by using information on similar shots in the past. It assigns a probability between 0 and 1 to each shot taken by a team in a game, where 0 indicates no possibility of the shot being a goal and 1 indicates a definite goal.
+								</p>
+								<p>For this project there are couple steps to get through:</p>
+								<ul class="step">
+									<li><a href="#1">Data Collecting</a></li>
+									<li><a href="#2">Exploratory Data</a></li>
+									<li><a href="#3">Build a Model</a></li>
+								</ul>
+								<h6 id="1">1. Data Collecting</h6>
+								<p>Due to lack of data provided in Indonesian Liga 1. Therefore, I have to create one by watching and analyzing match videos from few seasons ago and manually inputing the necessary data such as: <ul>
+									<li>player's position (is it forward, midfielder, or defender?)</li>
+									<li>player's x&y location (i am using statsbomb pitch coordinate so it will be ranging from 0 to 120 for x value / width of the pitch and 0 to 80 for y value / height of the pitch )</li>
+									<li>type of shot (wheter it's header, volley or usual shot)</li>
+									<li>type of pass (is it a cross, throughpass, long ball or etc.?)</li>
+									<li>body part to shoot (is it a head, weaker foot, strong foot or any other body part?)</li>
+									<li>player in the way - number of player that get in the way of shot including goalkeeper</li>
+									<li>on target - i assign the value to 1 if the shot is on target and 0 if the shot is off target</li>
+									<li>goal - it's the same with on target, in addition this is the dependen variable or the target i am trying to predict using the model</li>
+								</ul> 
+								</p>
+								<p>Here is an example of how pitch coordinate look like</p>
+								<div id="img">
+									<img src="images\football_001-1024x681.png" alt="" id="pitch">
+								</div>
+								<h6 id="2">2. Exploratory Data</h6>
+								<p>From the data that have been collected In the previous phase i can create new features like : </p>
+								<ul>
+									<li>Distance to Right Goal Post</li>
+									<li>Distance to Left Goal Post</li>
+									<li>Angle of the shot taken</li>
+								</ul>
+								<p>To create Distance to Right and Left Goal Post i used pythagorean theorem. Below is how to use pythagorean theorem to calculate distance:</p>
+								<div id="img">
+									<img src="images\20231026_205211_0000.png" alt="" id="formula">
+								</div>
+								<p>And for the angle it's litle bit tricky i used the law of cosine (specifically inverse cosine) to calculate the angle, the formula is like this:</p>
+								<span class="formula">
+									<b>cos^-1((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
+								</span>
+								<b>or</b>
+								<span class="formula">
+									<b>acos((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
+								</span>
+								<p>Here is the shot map from over thousands of data dating from 2019/2020 until 2022/2023. The blue dots is for goals while the reds one is non-goal shots</p>
+								<div id="img">
+									<img src="images\shot.png" alt="" id="shot">
+								</div>
+								<p>Also for model to be able to learn, some of the variable value need to be convert to numerical value like: player's position, type of shot, type of pass. To do that One-Hot-Encoding can be used but i prefer to use the probability of each variable's value to a goal being scored. For example how many goals are scored by Forward player then i can divide it by the lenght of the data to replace value of Forward. Same goes for type of shot and type of pass.</p>
+								<h6 id="3">3. Build a Model</h6>
+								<p>For building a machine learning model like in this case as i said earlier is to predict the outcome of a shot being a goal the answer is yes (1) or no (0). This is known as Classification problem, but for an xG the outcome needed is not straight answer of goal or not but rather the probability of a shot being a goal.</p>
+								<p>Therefore i will only take the confidence level of the predicted outcome by the model. As for the algoritm i am using Gradient Boosting. Gradient boosting is a machine learning technique used in regression and classification tasks, among others. It is an ensemble method that combines multiple weak models to create a strong model. The algorithm works by iteratively training decision trees on the residuals of the previous tree, where the residuals are the differences between the predicted and actual values. The final model is a weighted sum of all the decision trees. Gradient boosting is known for its prediction speed and accuracy, particularly with large and complex datasets. I am using XGBoost an open-source library for gradient boosting very powerful tool for machine learning especially dealing with gradient boosting it can even handle missing values.</p>
+								<p>As usual in machine learning, first thing we need to do is always spliting data into X and y. In which X is variables that the model learn from and y is variable target that the model will try to predict. After setting that we can initiate model to be XGBClassifier and train the model.</p>
+								<p>Here is the shot map will look like when the size of dots is determine by the percentage of goal probability (value of  xG from my model * 100 pixel). The smaller the dots the less chance of the shots being scored and vice versa.</p>
+								<div id="img">
+									<img src="images\shot-map-with-xg-1000.png" alt="" id="map">
+								</div>
+							</article>
+
+						<!-- Contact -->
+							<article id="contact" class="panel">
+								<header>
+									<h2>Contact Me</h2>
+								</header>
+								<form action="https://formsubmit.com/6c80894279a1e70ec30769e3151aad49" method="POST">
+									<div>
+										<div class="row">
+											<div class="col-6 col-12-medium">
+												<input type="text" name="name" placeholder="Name"/>
+											</div>
+											<div class="col-6 col-12-medium">
+												<input type="text" name="email" placeholder="Email"/>
+											</div>
+											<div class="col-12">
+												<input type="text" name="subject" placeholder="Subject"/>
+											</div>
+											<div class="col-12">
+												<textarea name="message" placeholder="Message" rows="6"></textarea>
+											</div>
+											<div class="col-12">
+												<input type="submit" value="Send Message" />
+											</div>
+										</div>
+									</div>
+								</form>
+							</article>
+
+					</div>
+
+				<!-- Footer -->
+					<div id="footer">
+							<b>&copy; Khofi Alfian 2023</b>
+							<p>The code for this project is not made public. Feel free to ask via private message.</p>
+					</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="assets/js/jquery.min.js"></script>
+			<script src="assets/js/browser.min.js"></script>
+			<script src="assets/js/breakpoints.min.js"></script>
+			<script src="assets/js/util.js"></script>
+			<script src="assets/js/main.js"></script>
+
+	</body>
+</html>
