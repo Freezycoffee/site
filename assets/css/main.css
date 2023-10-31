@@ -2186,3 +2186,10 @@ input, select, textarea {
 		#map{
 			max-width:70%;
 		}
+		#analysis{
+			display: flex;
+			justify-content: center;
+		}
+		article ul .adidas a{
+			text-decoration:none;
+		}
