@@ -2186,7 +2186,7 @@ input, select, textarea {
 		#map{
 			max-width:70%;
 		}
-		#analysis{
+		article ul .adidas #analysis{
 			display: flex;
 			justify-content: center;
 		}
