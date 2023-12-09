@@ -59,7 +59,7 @@
 									<p>
 										Expected Goals (xG) adalah sebuah metrik dalam sepak bola yang mengukur peluang sebuah tembakan menjadi gol. Nilai xG sendiri berkisar dari 0 hingga 1. Satu artinya pasti menjadi gol dan nol artinya tidak mungkin menjadi gol. 
 									</p>
-									<p>Untuk bisa mengetahui nilai peluang dengan xG saya membuat model machine learning untuk klasifikasi dengan algoritma Gradient Boosting menggunakan data yang saya kumpulkan berkaitan dengan tembakan (shots) di Liga 1. Berikut adalah langkah-langkahnya:</p><br>
+									<p>Untuk bisa mengetahui nilai peluang dengan xG saya membuat model machine learning untuk klasifikasi dengan algoritma Gradient Boosting menggunakan data yang saya kumpulkan berkaitan dengan tembakan (shots) di Liga 1. Berikut adalah langkah-langkahnya:</p>
 									<ul class="step">
 										<li>
 											<h6 onclick="toggleArticle(this)" class="langkah">Pengumpulan Data</h6>
@@ -205,15 +205,16 @@ from xgboost import XGBClassifier
 from skopt import BayesSearchCV
 											</code></pre></p>
 											<p>Langkah selanjutnya adalah membuat dataframe dengan pandas, kemudian membagi data tersebut menjadi data training dan data test menggunakan <code>train_test_split()</code> dari sklearn.<br>
+											Untuk contoh dataset yang bisa digunakan untuk membuat model xG bisa dilihat <a href="https://drive.google.com/drive/folders/1AG1kYRk6Gqb1PI27TNWkB-xQ7bTamDaU?usp=drive_link" target="_blank">di sini</a>. Data tersebut adalah dataset seluruh shot dari kompetisi FIFA U-17 World Cup. Karena XGBoost hanya bisa menerima kolom yang memiliki nilai berupa angka dan masih ada kolom yang memiliki value berupa string kita bisa menggunakan get_dummies() function dari pandas untuk mengubah value tersebut.
 											<pre><code class="language-python line-numbers">
-df = pd.read_csv('shot-data.csv')
+df = pd.read_excel('fifa_wc_u_17_xg.xlsx',sheet_name='fifa_wc_u_17_xg')
 # pilih kolom yang akan dipelajari oleh model
-feature = ['pos', 'distance_to_l','distance_to_r', 'angle',
-       'technique', 'player_in_the_way', 'pass', 'situate',
+feature = ['player_pos', 'distance_to_l','distance_to_r', 'angle',
+       'shot_technique', 'player_in_the_way', 'pass_type', 'situation',
        'inside_pen_box', 'inside_6_box', 'header', 'weaker_foot',
        'strong_foot','other_part','big_chances','on_target']
 # pembagian data
-X = df[feature]
+X = pd.get_dummies(df[feature])
 y = df.is_goal
 X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)											
 											</code></pre><br>
@@ -267,7 +268,6 @@ sns.heatmap(cm,annot=True)
 														<img src="images\final_ger_fra_match.png" alt="">
 													</div>
 													<p>Dari grafik tersebut dapat dilihat Germany mengakumulasi xG sebanyak 2.7 yang artinya paling tidak mereka mencetak 2 gol begitu juga dengan France yang mengakumulasikan xG sebesar 2.49, yang mana adalah benar bahwa di pertandingan tersebut kedua tim mencetak 2 gol. Dan harus menentukan juara dengan adu penalti dimana Germany keluar sebagai kampiun.</p>
-													<p>Untuk contoh dataset yang bisa digunakan untuk membuat model xG bisa dilihat <a href="https://drive.google.com/drive/folders/1AG1kYRk6Gqb1PI27TNWkB-xQ7bTamDaU?usp=drive_link" target="_blank">di sini</a>. Data tersebut adalah dataset seluruh shot dari kompetisi FIFA U-17 World Cup.</p>
 												</article>
 											</li>
 											</ul>
