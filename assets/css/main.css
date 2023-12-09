@@ -2193,3 +2193,21 @@ input, select, textarea {
 		article ul .adidas a{
 			text-decoration:none;
 		}
+		ol li img {
+			object-fit : cover;
+			width : 60%;
+			height : 60%;
+		}
+
+		ul li .steps {
+			display : none;
+		}
+		ul li .langkah:hover {
+			cursor : pointer;
+			text-decoration : underline;
+			text-color : darkblue;
+		}
+		p pre code {
+			padding : 2px;
+			font-size : 10px;
+		}

@@ -11,7 +11,15 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="icon" href="images\icons8-puzzle-48.png">
+		<link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+		<script>
+			function toggleArticle (element){
+				var article = element.nextElementSibling;
+				article.style.display = (article.style.display=='none')?'block':'none';
+			}
+		</script>
+
 	</head>
 	<body class="is-preload">
 
@@ -43,69 +51,227 @@
 							<article id="work" class="panel">
 								<h2>Work</h2>
 								<br>
-								<ul>
+								<ol>
 									<li>
 										<header>
 										<h1><strong>Build an Expected Goals(xG) model for Indonesian Liga 1</strong></h1>
 									</header>
 									<p>
-										Expected goals (xG) is a metric used in football to measure the quality of a chance by calculating the likelihood that it will be scored by using information on similar shots in the past. It assigns a probability between 0 and 1 to each shot taken by a team in a game, where 0 indicates no possibility of the shot being a goal and 1 indicates a definite goal.
+										Expected Goals (xG) adalah sebuah metrik dalam sepak bola yang mengukur peluang sebuah tembakan menjadi gol. Nilai xG sendiri berkisar dari 0 hingga 1. Satu artinya pasti menjadi gol dan nol artinya tidak mungkin menjadi gol. 
 									</p>
-									<p>For this project there are couple steps to get through:</p>
+									<p>Untuk bisa mengetahui nilai peluang dengan xG saya membuat model machine learning untuk klasifikasi dengan algoritma Gradient Boosting menggunakan data yang saya kumpulkan berkaitan dengan tembakan (shots) di Liga 1. Berikut adalah langkah-langkahnya:</p>
 									<ul class="step">
-										<li><a href="#1">Data Collecting</a></li>
-										<li><a href="#2">Exploratory Data</a></li>
-										<li><a href="#3">Build a Model</a></li>
-									</ul>
-									<h6 id="1">1. Data Collecting</h6>
-									<p>Due to lack of data provided in Indonesian Liga 1. Therefore, I have to create one by watching and analyzing match videos from few seasons ago and manually inputing the necessary data such as: <ul>
-										<li>player's position (is it forward, midfielder, or defender?)</li>
-										<li>player's x&y location (i am using statsbomb pitch coordinate so it will be ranging from 0 to 120 for x value / width of the pitch and 0 to 80 for y value / height of the pitch )</li>
-										<li>type of shot (wheter it's header, volley or usual shot)</li>
-										<li>type of pass (is it a cross, throughpass, long ball or etc.?)</li>
-										<li>body part to shoot (is it a head, weaker foot, strong foot or any other body part?)</li>
-										<li>player in the way - number of player that get in the way of shot including goalkeeper</li>
-										<li>on target - i assign the value to 1 if the shot is on target and 0 if the shot is off target</li>
-										<li>goal - it's the same with on target, in addition this is the dependen variable or the target i am trying to predict using the model</li>
-									</ul> 
-									</p>
-									<p>Here is an example of how pitch coordinate look like</p>
-									<div id="img">
-										<img src="images\football_001-1024x681.png" alt="" id="pitch">
-									</div>
-									<h6 id="2">2. Exploratory Data</h6>
-									<p>From the data that have been collected In the previous phase i can create new features like : </p>
-									<ul>
-										<li>Distance to Right Goal Post</li>
-										<li>Distance to Left Goal Post</li>
-										<li>Angle of the shot taken</li>
-									</ul>
-									<p>To create Distance to Right and Left Goal Post i used pythagorean theorem. Below is how to use pythagorean theorem to calculate distance:</p>
-									<div id="img">
-										<img src="images\20231026_205211_0000.png" alt="" id="formula">
-									</div>
-									<p>And for the angle it's litle bit tricky i used the law of cosine (specifically inverse cosine) to calculate the angle, the formula is like this:</p>
-									<span class="formula">
-										<b>cos^-1((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
-									</span>
-									<b>or</b>
-									<span class="formula">
-										<b>acos((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
-									</span>
-									<p>Here is the shot map from over thousands of data dating from 2019/2020 until 2022/2023. The blue dots is for goals while the reds one is non-goal shots</p>
-									<div id="img">
-										<img src="images\shot.png" alt="" id="shot">
-									</div>
-									<p>Also for model to be able to learn, some of the variable value need to be convert to numerical value like: player's position, type of shot, type of pass. To do that One-Hot-Encoding can be used but i prefer to use the probability of each variable's value to a goal being scored. For example how many goals are scored by Forward player then i can divide it by the lenght of the data to replace value of Forward. Same goes for type of shot and type of pass.</p>
-									<h6 id="3">3. Build a Model</h6>
-									<p>For building a machine learning model like in this case as i said earlier is to predict the outcome of a shot being a goal the answer is yes (1) or no (0). This is known as Classification problem, but for an xG the outcome needed is not straight answer of goal or not but rather the probability of a shot being a goal.</p>
-									<p>Therefore i will only take the confidence level of the predicted outcome by the model. As for the algoritm i am using Gradient Boosting. Gradient boosting is a machine learning technique used in regression and classification tasks, among others. It is an ensemble method that combines multiple weak models to create a strong model. The algorithm works by iteratively training decision trees on the residuals of the previous tree, where the residuals are the differences between the predicted and actual values. The final model is a weighted sum of all the decision trees. Gradient boosting is known for its prediction speed and accuracy, particularly with large and complex datasets. I am using XGBoost an open-source library for gradient boosting very powerful tool for machine learning especially dealing with gradient boosting it can even handle missing values.</p>
-									<p>As usual in machine learning, first thing we need to do is always spliting data into X and y. In which X is variables that the model learn from and y is variable target that the model will try to predict. After setting that we can initiate model to be XGBClassifier and train the model.</p>
-									<p>Here is the shot map will look like when the size of dots is determine by the percentage of goal probability (value of  xG from my model * 100 pixel). The smaller the dots the less chance of the shots being scored and vice versa.</p>
-									<div id="img">
-										<img src="images\shot-map-with-xg-1000.png" alt="" id="map">
-									</div></li>
-									<br>
+										<li>
+											<h6 onclick="toggleArticle(this)" class="langkah">Pengumpulan Data</h6>
+											<article class="steps">
+												<p>
+													Pengumpulan data dapat dilakukan dengan beberapa cara untuk cara yang saya gunakan yang pertama adalah manually input data dan scrape data dari website penyedia statistik pertandingan seperti sofascore.com. Untuk melakukan scrapping yang saya gunakan sendiri caranya adalah dengan me-recreate <i>API-calls</i> dari website tersebut. Berikut adalah <i>step-by-step</i>-nya : <br><br>
+													<ol>
+														<li>Pergi ke website <a href="http://www.sofascore.com/" target="_blank">sofascore.com</a>, pilih match yang ingin di-scrape datanya.
+														</li>
+														<li>Lalu klik kanan dan klik inspect atau periksa
+															<img src="images\step1.png" alt="">
+														</li>
+														<li>
+															Lalu masuk ke tab Network pilih <b>fetch/XHR</b>, kemudian cari item yang bernama <b>shotmap</b> klik kanan dan copy lalu copy as cURL (bash). <br>
+															<img src="images\step2.png" alt="">
+														</li>
+														<li>
+															Lalu pergi ke <a href="https://curlconverter.com">curl converter</a> dan paste shotmap info yang telah di-copy. Kemudian copy hasil dari converter tersebut. <br>
+														<img src="images\step3.png" alt="">
+														</li>
+														<li>Jalankan script yang telah di-copy dari web converter tersebut di IDE python lalu save. Berikut adalah contoh kode-nya.
+														<pre><code class="language-python">
+import requests
+import pandas as pd
+headers = {
+    'authority': 'api.sofascore.com',
+    'accept': '*/*',
+    'accept-language': 'id,en;q=0.9,en-GB;q=0.8,en-US;q=0.7',
+    'cache-control': 'max-age=0',
+    'if-none-match': 'W/"4074ef5a9a"',
+    'origin': 'https://www.sofascore.com',
+    'referer': 'https://www.sofascore.com/',
+    'sec-ch-ua': '"Microsoft Edge";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-site',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36 Edg/119.0.0.0',
+    'If-Modified-Since':'Sat, 2 Dec 2023 00:00:00'
+    }
+
+response = requests.get('https://api.sofascore.com/api/v1/event/11865262/shotmap', headers=headers)
+
+# cek status code
+response.status_code
+
+# menyimpan hasil scrape
+shot = response.json()
+df = pd.DataFrame(shot['shotmap'])
+df.to_csv('shot-data.csv')
+														</code>
+														</pre>
+														</li>
+													</ol>
+												</p>
+											</article>
+										</li>
+										<li>
+											<h6 onclick="toggleArticle(this)" class="langkah">Persiapan Data</h6>
+											<article class="steps">
+												<p>
+													Langkah selanjutnya adalah mempersiapkan data yang akan digunakan untuk melatih model. Data tersebut harus mencakup variabel-variabel yang relevan dengan target yang ingin diprediksi. Dalam kasus ini, variabel-variabel yang umumnya digunakan adalah:
+													<ul>
+														<li><b>Posisi Pemain yang melakukan tendangan</b><br>Posisi pemain akan berpengaruh pada kualitas sebuah tendangan. Umumnya gol akan banyak dicetak oleh penyerang daripada pemain yang berposisi sebagai pemain bertahan. Hal tersebut berlaku juga untuk <b>Teknik tendangan, Jenis umpan, Situasi permainan, dan Bagian tubuh yang digunakan untuk menendang </b></li>
+														<li><b>Jarak tendangan</b><br>Jarak tendangan bisa diukur dengan pertama mengetahui koordinat x dan y pemain, kemudian dihitung dengan rumus pythagoras relatif terhadap gawang.</li>
+														<li><b>Sudut tendangan</b><br> Untuk menghitung sudut bisa dihitung dengan memasukan jarak yang sudah dihitung sebelumnya ke dalam rumus inverse cosine. berikut adalah contohnya.
+														<span class="formula">
+															<b>Sudut A = acos((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
+														</span>
+														<b> atau </b>
+														<span class="formula">
+															<b>Sudut A = cos^-1((AB^2 + AC^2 - BC^2) / 2*(AB*AC))</b>
+														</span>
+														<img src="images\20231026_205211_0000.png" alt="" id="formula">
+														</li>
+														<li><b>Teknik tendangan</b></li>
+														<li><b>Jenis umpan</b></li>
+														<li><b>Situasi Permainan</b></li>
+														<li><b>Bagian tubuh yang digunakan untuk menendang</b></li>
+													</ul>
+													<p>Kemudian setelah variabel-variabel yang dibutuhkan tersedia selanjutnya adalah pembersihan data yaitu mengecek adakah outlier dalam data. Hal tersebut bisa dilakukan dengan mem-visualisasikan data yang telah dikumpulkan. Untuk visualisasi saya menggunakan library <b>mplsoccer</b>. Berikut adalah contoh visualisasi dimana titik biru muda menunjukan gol dan titik merah menunjukan tidak gol.
+													</p> <br>
+													<pre><code class="language-python line-numbers" data-prismjs-copy="Copy">
+!pip install mplsoccer
+from mplsoccer import VerticalPitch
+pitch = VerticalPitch(pad_bottom=0.5,
+                      half=True,
+                      goal_type='box',
+                      goal_alpha=0.8,
+                      pitch_color='white',
+                      linewidth=3)
+# draw pitch
+fig, ax = pitch.draw(figsize=(12, 10))
+
+# non-goal shots
+sc1 = pitch.scatter(shot.x, shot.y,
+					s=100,
+					c='#f43b56',
+					marker='o',
+					alpha=0.8,
+					ax=ax,)
+# goal shots					  
+sc2 = pitch.scatter(goal.x, goal.y,
+					s=100,
+					c='#8ff1ff',
+					marker='o',
+					alpha=0.8,
+					ax=ax)
+					  
+txt = ax.text(x=40, y=75, s='Liga 1 Shots Map',
+				alpha=.6,
+				size=30,color='grey',
+				va='center', ha='center')
+name = ax.text(x=1,y=61,s='Khofi Alfian\n@AlfianKhofi',
+				size=11,color='grey',
+				va='bottom',ha='left')
+													</code></pre>
+													<div id="img">
+														<img src="images\shot.png" alt="" id="shot">
+													</div><br>
+													<p>dari visualisasi tersebut dapat dilihat ada beberapa outlier seperti: Goal yang dicetak dari corner-kick tentu hal tersebut adalah hal yang jarang terjadi, lalu goal yang dicetak dari jarak yang cukup jauh hampir dari garis tengah itu juga termasuk outlier. Sebelum masuk ke pembuatan model sebaiknya outlier tersebut dibersihkan terlebih dahulu.</p>
+												</p>
+											</article>
+										</li>
+										<li>
+											<h6 onclick="toggleArticle(this)" class="langkah">Pembuatan Model</h6>
+											<article class="steps">
+											<p>Untuk pembuatan model, langkah pertama adalah menginstall library yang diperlukan di antaranya : XGBoost, SkLearn, Pandas, Numpy dan Library untuk visualisasi</p>
+											<p><pre><code class="language-python line-numbers">
+!pip install xgboost
+!pip install scikit-optimize
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from mplsoccer import VerticalPitch,Pitch
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import classification_report,
+							roc_auc_score,
+							confusion_matrix
+from xgboost import XGBClassifier
+from skopt import BayesSearchCV
+											</code></pre></p>
+											<p>Langkah selanjutnya adalah membuat dataframe dengan pandas, kemudian membagi data tersebut menjadi data training dan data test menggunakan <code>train_test_split()</code> dari sklearn.<br>
+											<pre><code class="language-python line-numbers">
+df = pd.read_csv('shot-data.csv')
+# pilih kolom yang akan dipelajari oleh model
+feature = ['pos', 'distance_to_l','distance_to_r', 'angle',
+       'technique', 'player_in_the_way', 'pass', 'situate',
+       'inside_pen_box', 'inside_6_box', 'header', 'weaker_foot',
+       'strong_foot','other_part','big_chances','on_target']
+# pembagian data
+X = df[feature]
+y = df.is_goal
+X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2)											
+											</code></pre><br>
+											Kemudian karena menggunakan optimization dari scikit, perlu membuat search space atau singkatnya adalah bagaimana model nantinya akan belajar. Sebelumnya karena adanya imbalance antara jumlah gol dan tidak gol maka perlu juga untuk dibuat ratio.
+											<pre><code class="language-python line-numbers">
+ratio = y_train.value_counts()[0]/y_train.value_counts()[1]
+space ={'learning_rate':[0.001,0.01,0.1,0.25,0.5,1.0],\
+        'max_depth':[2,3,4,5,6,7],\
+        'n_estimator':[150,200,250,300,350,400]\
+		'subsample':[0.5,0.6,0.7,0.8,0.9,1.0],\
+        'colsample_bytree':[0.5,0.6,0.7,0.8,0.9,1.0],\
+        'colsample_bylevel':[0.5,0.6,0.7,0.8,0.9,1.0],\
+        'colsample_bynode':[0.5,0.6,0.7,0.8,0.9,1.0],\
+        'reg_alpha':[0.5,0.6,0.7,0.8,0.9,1.0],\
+        'reg_lambda':[0.0,0.1,0.2,0.3,0.4,0.5],\
+        'gamma':[0.0,0.1,0.2,0.3,0.4,0.5]}
+# pembuatan model
+model = XGBClassifier(scale_pos_weight=ratio)
+xG = BayesSearchCV(model,space,scoring='roc_auc',cv=3,n_iter=7)
+# melatih model
+xG.fit(X_train,y_train)											
+											</code></pre><br>
+											Angka-angka yang ada di space tersebut bisa disesuaikan dengan model yang akan dibuat dan banyaknya data yang digunakan begitu juga dengan cross validation (cv) dan number of iteration (n_iter) semakin tinggi angkanya maka semakin baik model dalam belajar namun akan memakan waktu yang cukup lama dan juga resiko overfitting. 
+											</p>
+											</article>
+										</li>
+										<li>
+											<h6 onclick="toggleArticle(this)" class="langkah">Evaluasi Model</h6>
+											<article class="steps">
+												<p>Langkah selanjutnya adalah evaluasi model. Ada beberapa metrik yang dapat digunakan untuk mengevaluasi model namun yang umum digunakan pada kasus klasifikasi adalah roc_auc_score. Metrik yang digunakan untuk mengevaluasi kinerja model klasifikasi biner. Ini mengukur kemampuan model untuk membedakan antara dua kelas di semua batas klasifikasi yang mungkin. Kurva ROC adalah plot yang menggambarkan tingkat positif sebenarnya (sensitivitas) terhadap tingkat positif palsu (spesifisitas 1) untuk ambang klasifikasi yang berbeda. Tingkat positif sebenarnya (TPR) adalah proporsi kasus positif aktual yang diidentifikasi dengan benar oleh model, sedangkan tingkat positif palsu (RPF) adalah proporsi kasus negatif aktual yang salah diidentifikasi sebagai positif. AUC-ROC adalah area di bawah kurva ROC ini. Ini berkisar dari 0 hingga 1, di mana nilai yang lebih tinggi menunjukkan kinerja model yang lebih baik. Sebuah AUC-ROC dari 1 mewakili pengklasifikasi sempurna yang dapat membedakan antara dua kelas tanpa kesalahan, sedangkan AUC-ROC dari 0.5 menunjukkan bahwa model tidak lebih baik dari peluang acak. Dalam praktiknya, nilai AUC-ROC yang mendekati 1 lebih disukai, karena menunjukkan kemampuan model untuk mengklasifikasikan kasus positif dan negatif secara akurat.
+												<pre><code class="language-python line-numbers">
+y_predict = xG.predict(X_test)
+y_predict_prob = xG.predict_proba(X_test)[:,1]
+auc = roc_auc_score(y_test,y_predict_prob)
+
+print(f'auc:{auc}')
+print(classification_report(y_test,y_predict))
+
+# confusion matrix plot
+cm = confusion_matrix(y_test,y_predict)
+sns.heatmap(cm,annot=True)
+												</code></pre>
+												</p>
+											</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Penggunaan Model</h6>
+												<article class="steps">
+													<p>Untuk penggunaan model saya menggunakan untuk melihat performa xG beberapa pertandingan Liga 1, juga seluruh pertandingan dari FIFA U-17 World Cup. Berikut adalah contoh grafik dari pertandingan final U-17 World Cup Antara France melawan Germany.</p>
+													<div id="img">
+														<img src="images\final_ger_fra_match.png" alt="">
+													</div>
+													<p>Dari grafik tersebut dapat dilihat Germany mengakumulasi xG sebanyak 2.7 yang artinya paling tidak mereka mencetak 2 gol begitu juga dengan France yang mengakumulasikan xG sebesar 2.49, yang mana adalah benar bahwa di pertandingan tersebut kedua tim mencetak 2 gol. Dan harus menentukan juara dengan adu penalti dimana Germany keluar sebagai kampiun.</p>
+													<p>Untuk contoh dataset yang bisa digunakan untuk membuat model xG bisa dilihat <a href="https://drive.google.com/drive/folders/1AG1kYRk6Gqb1PI27TNWkB-xQ7bTamDaU?usp=drive_link">di sini</a>. Data tersebut adalah dataset seluruh shot dari kompetisi FIFA U-17 World Cup.</p>
+												</article>
+											</li>
+											</ul>
+									<br><br>
 									<li class="adidas">
 										<h2>Adidas Sales Analysis</h2><br>
 										<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashborad from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total</p>
@@ -113,7 +279,7 @@
 											<iframe width="600" height="900" src="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" frameborder="0" style="border:0" allowfullscreen></iframe>									
 										</div>
 									</li>
-								</ul>
+								</ol>
 								
 							</article>
 
@@ -153,7 +319,6 @@
 				<!-- Footer -->
 					<div id="footer">
 							<b>&copy; Khofi Alfian 2023</b>
-							<p>The code for this project is not made public. Feel free to ask via private message.</p>
 					</div>
 
 			</div>
@@ -164,6 +329,13 @@
 			<script src="assets/js/breakpoints.min.js"></script>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js" integrity="sha256-NSwb7O0HrDJcC+2SASgGuCP8+tdpIhqnzLTZkGRJRCk=" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/remove-initial-line-feed/prism-remove-initial-line-feed.js" integrity="sha256-rLEmlPVcY3+5JIOTtFDQAarl98NYg1yMIup9c6+v9ug=" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" integrity="sha256-qf3MqHLzDh4qqAnc9QVmqjEWBA4CfzP1YwRFbfNfpnE=" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/autoloader/prism-autoloader.min.js" integrity="sha256-AjM0J5XIbiB590BrznLEgZGLnOQWrt62s3BEq65Q/I0=" crossorigin="anonymous"></script>
+			<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/plugins/line-numbers/prism-line-numbers.min.js" integrity="sha256-9cmf7tcLdXpKsPi/2AWE93PbZpTp4M4tqzFk+lWomjU=" crossorigin="anonymous"></script>
 
 	</body>
 </html>
