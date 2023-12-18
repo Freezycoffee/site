@@ -2211,3 +2211,37 @@ input, select, textarea {
 			padding : 2px;
 			font-size : 10px;
 		}
+
+		table {
+			font-size : 12px;
+			width : 80%;
+			border : 2px solid black ;
+		}
+		table tr .year{
+			text-align : center;
+		}
+		table tr .product{
+			text-align : left;
+		}
+		table tr td{
+			text-align : right;
+			padding : 2px;
+			border : 2px solid black ;
+		}
+		table tr th{
+			text-align : center;
+			font-weight : bold;
+			padding : 2px;
+			border : 2px solid black ;
+		}
+		ol li .langkah:hover {
+			cursor : pointer;
+			text-decoration : underline;
+			text-color : darkblue;
+		}
+		ol li .steps {
+			display : none;
+		}
+		.inform {
+			font-size : 10px;
+		}

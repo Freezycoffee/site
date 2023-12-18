@@ -70,6 +70,7 @@
 										Expected Goals (xG) adalah sebuah metrik dalam sepak bola yang mengukur peluang sebuah tembakan menjadi gol. Nilai xG sendiri berkisar dari 0 hingga 1. Satu artinya pasti menjadi gol dan nol artinya tidak mungkin menjadi gol. 
 									</p>
 									<p>Untuk bisa mengetahui nilai peluang dengan xG saya membuat model machine learning untuk klasifikasi dengan algoritma Gradient Boosting menggunakan data yang saya kumpulkan berkaitan dengan tembakan (shots) di Liga 1. Berikut adalah langkah-langkahnya:</p>
+									<p class="inform">*klik untuk melihat detail setiap langkah</p>
 									<ul class="step">
 										<li>
 											<h6 onclick="toggleArticle(this)" class="langkah">Pengumpulan Data</h6>
@@ -288,7 +289,359 @@ sns.heatmap(cm,annot=True)
 									<br><br>
 									<li class="adidas">
 										<h2>Adidas Sales Analysis</h2><br>
-										<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total</p>
+										<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total.</p>
+										<p> Every analysis always began with questions. In order to gain an insight from the data. So, here are the questions:</p>
+										<p class="inform">*click to see the detail for each section</p>
+										<ol>
+											<li>
+												<h6 onclick="toggleArticle(this)"class="langkah">Overall Sales Performance</h6>
+												<article class="steps">
+													<ul>
+														<li>How has company's total revenue over the past year?</li>
+														<li>Are there any patterns or anomalies?</li>
+													</ul>
+													<p>
+													<pre>
+													<code class="language-python">
+
+import seaborn as sns
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# First create Dataframe using excel data and Clean the data
+data = pd.read_excel('Adidas US Sales Datasets.xlsx',names=['Retailer','Retailer ID','Invoice Date','Region','State','City','Product','Price per Unit','Units Sold','Total Sales','Operating Profit','Operating Margin','Sales Method'])
+data = data.shift(-4).reset_index().drop('index',axis=1)
+data = data.drop(data.tail(4).index)
+data.to_csv('cleaned_sales_adidas.csv')
+# Read the cleaned data
+df = pd.read_csv('cleaned_sales_adidas.csv')
+df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
+df['Total Sales'] = df['Total Sales'].astype('int')
+df['Operating Profit'] = df['Operating Profit'].astype('int')
+
+# Plotting the sales by year
+revenue = df.groupby(df['Invoice Date'].dt.year).agg({'Total Sales':'sum','Operating Profit':'sum'}).reset_index()
+revenue['total_sales_in_million'] = round(revenue['Total Sales']/1000000,2)
+revenue['total_profit_in_million'] = round(revenue['Operating Profit']/1000000,2)
+
+plt.figure(figsize=(7,5))
+plt.title('Profit & Total Sales by Year')
+plt.xlabel('Year')
+plt.ylabel('Profit & Total Sales')
+plt.bar('Invoice Date','total_sales_in_million',data=revenue, tick_label=[2020,2021])
+plt.bar('Invoice Date','total_profit_in_million',data=revenue, tick_label=[2020,2021])
+plt.legend(['Total Sales(mil)','Profit(mil)'])
+plt.savefig('Profit & Total Sales by Year.png',bbox_inches='tight',dpi=300)
+plt.show()
+													</code>
+													</pre>
+													</p>
+													<div id="analysis">
+													<img src="images\Profit & Total Sales by Year.png" alt="">
+													</div>
+													<table>
+														<tr><th>Year</th><th>Total Sales in Million</th><th>Profit in Million</th></tr>
+														<tr><td class="year">2020</td><td>182.02</td><td>63.38</td></tr>
+														<tr><td class="year">2021</td><td>717.82</td><td>268.76</td></tr>
+													</table>
+													<p>As can be seen both Total Sales and Profit rose roughly more than 200% in 2021 from 2020, probable explanation for this is because there is global pandemic 2020 which affected almost every business in the world. Since the data's coverage is only from 2020 to 2021 it's hard to tell if there are some patterns or anomalies.</p>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Products Performance and Seasonal Trends</h6>
+												<article class="steps">
+													<ul>
+														<li>Which products are top sellers in terms of revenue and quantity sold?</li>
+														<li>Are there any products that have significant drop recently?</li>
+													</ul>
+													<pre><code class="language-python">
+product = df.groupby([df['Invoice Date'].dt.strftime('%Y-%m'),'Product']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+product['total_sales_in_million'] = round(product['Total Sales']/1000000,2)
+product['total_profit_in_million'] = round(product['Operating Profit']/1000000,2)
+product['unit_sold_k'] = product['Units Sold']/1000
+														
+plt.title('Profit ,Total Sales, Units Sold by Product')
+plt.xlabel('Units Sold, Profit, Total Sales')
+plt.ylabel('Product')
+plt.barh('Product','unit_sold_k',data=product)
+plt.barh('Product','total_sales_in_million',data=product)
+plt.barh('Product','total_profit_in_million',data=product)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+plt.savefig('Profit ,Total Sales, Units Sold by Product.png',bbox_inches='tight',dpi=300)
+plt.show()
+													</code></pre>
+													<div id="analysis">
+														<img src="images\Profit ,Total Sales, Units Sold by Product.png" alt="">
+													</div>
+													<table>
+														<tr><th>Products</th><th>Units Sold in Thousand</th><th>Total Sales in Million</th><th>Profit in Million</th></tr>
+														<tr><td class="product">Men's Street Footwear</td><td>11.919</td><td>3.86</td><td>1.83</td></tr>
+														<tr><td class="product">Women's Apparel</td><td>8.489</td><td>3.07</td><td>0.74</td></tr>
+														<tr><td class="product">Men's Athletic Footwear</td><td>7.791</td><td>2.64</td><td>0.76</td></tr>
+														<tr><td class="product">Women's Athletic Footwear</td><td>6.261</td><td>1.99</td><td>0.71</td></tr>
+														<tr><td class="product">Men's Apparel</td><td>5.902</td><td>2.29</td><td>0.86</td></tr>
+													</table>
+													<p>For seasonal trends here is the code: <pre>
+														<code class="language-python">
+
+men_apparel = product.loc[product['Product']=="Men's Apparel",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+men_ath_footwear = product.loc[product['Product']=="Men's Athletic Footwear",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+men_street_footwear = product.loc[product['Product']=="Men's Street Footwear",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+women_apparel = product.loc[product['Product']=="Women's Apparel",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+women_ath_footwear = product.loc[product['Product']=="Women's Athletic Footwear",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+women_street_footwear = product.loc[product['Product']=="Women's Street Footwear",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
+
+plt.figure(1,figsize=(35,50))
+plt.subplot(621)
+plt.title('Men\'s Apparel Sales in a Year')
+plt.xticks(rotation=45)
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=men_apparel)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=men_apparel)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=men_apparel)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.subplot(622)
+plt.xticks(rotation=45)
+plt.title('Men\'s Athletic Footwear Sales in a Year')
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=men_ath_footwear)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=men_ath_footwear)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=men_ath_footwear)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.subplot(623)
+plt.xticks(rotation=45)
+plt.title('Men\'s Street Footwear Sales in a Year')
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=men_street_footwear)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=men_street_footwear)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=men_street_footwear)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.subplot(624)
+plt.title('Women\'s Apparel Sales in a Year')
+plt.xticks(rotation=45)
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=women_apparel)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=women_apparel)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=women_apparel)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.subplot(625)
+plt.xticks(rotation=45)
+plt.title('Women\'s Athletic Footwear Sales in a Year')
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=women_ath_footwear)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=women_ath_footwear)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=women_ath_footwear)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.subplot(626)
+plt.xticks(rotation=45)
+plt.title('Women\'s Street Footwear Sales in a Year')
+plt.bar('Invoice Date','unit_sold_k',width = .5,data=women_street_footwear)
+plt.bar('Invoice Date','total_sales_in_million',width = .5,data=women_street_footwear)
+plt.bar('Invoice Date','total_profit_in_million',width = .5,data=women_street_footwear)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-small')
+
+plt.savefig('Men and Women Product by Time.png',bbox_inches='tight',dpi=300)
+plt.show()
+														</code>
+													</pre></p>
+													<div id="analysis">
+														<img src="images\Men and Women Product by Time.png" alt="">
+													</div>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Regional Analysis</h6>
+												<article class="steps">
+													<ul>
+														<li>Variations sales across different Regions or locations?</li>
+														<li>Are there any regions that standout in terms of sales performance?</li>
+													</ul>
+													<pre>
+														<code class="language-python">
+
+region = df.groupby(['Region','State']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+region['total_sales_in_million'] = round(region['Total Sales']/1000000,2)
+region['total_profit_in_million'] = round(region['Operating Profit']/1000000,2)
+region['unit_sold_k'] = region['Units Sold']/1000
+															
+midwest = region[region['Region']=='Midwest']
+northeast = region[region['Region']=='Northeast']
+south = region[region['Region']=='South']
+west = region[region['Region']=='West']
+southeast = region[region['Region']=='Southeast']
+															
+plt.figure(1,figsize=(10,30))
+plt.subplot(511)
+plt.title('Product Sales in Midwest')
+plt.barh('State','unit_sold_k',data=midwest)
+plt.barh('State','total_sales_in_million',data=midwest)
+plt.barh('State','total_profit_in_million',data=midwest)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+															
+plt.subplot(512)
+plt.title('Product Sales in West')
+plt.barh('State','unit_sold_k',data=west)
+plt.barh('State','total_sales_in_million',data=west)
+plt.barh('State','total_profit_in_million',data=west)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+															
+plt.subplot(513)
+plt.title('Product Sales in Northeast')
+plt.barh('State','unit_sold_k',data=northeast)
+plt.barh('State','total_sales_in_million',data=northeast)
+plt.barh('State','total_profit_in_million',data=northeast)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+															
+plt.subplot(514)
+plt.title('Product Sales in South')
+plt.barh('State','unit_sold_k',data=south)
+plt.barh('State','total_sales_in_million',data=south)
+plt.barh('State','total_profit_in_million',data=south)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+															
+plt.subplot(515)
+plt.title('Product Sales in Southeast')
+plt.barh('State','unit_sold_k',data=southeast)
+plt.barh('State','total_sales_in_million',data=southeast)
+plt.barh('State','total_profit_in_million',data=southeast)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+															
+plt.savefig('Sales by Region.png',bbox_inches='tight',dpi=300)
+plt.show()
+														</code>
+													</pre>
+													<div id="analysis">
+														<img src="images\Sales by Region.png" alt="">
+													</div>
+													<p>So those are the sales performance all the state of each region.
+													<ul>
+														<li>For Midwest Region the standout state are Michigan and Ohio</li>
+														<li>For West Region the standout state is by far California</li>
+														<li>For Northeast Region the standout state is an obvious New York</li>
+														<li>For South Region the standout state is Texas</li>
+														<li>For Southeast Region the standout state is Florida</li>
+													</ul>
+														Next I will compare each region sales performance
+													<pre>
+<code class="language-python">													
+regions = region.groupby('Region').agg({'unit_sold_k':'sum','total_sales_in_million':'sum','total_profit_in_million':'sum'}).reset_index()
+plt.title('Sales Performance of Each Region')
+plt.bar('Region','unit_sold_k',data=regions)
+plt.bar('Region','total_sales_in_million',data=regions)
+plt.bar('Region','total_profit_in_million',data=regions)
+plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+plt.savefig('Sales Performance each Region.png',bbox_inches='tight',dpi=300)
+plt.show()
+													</code></pre></p>
+													<div id="analysis">
+														<img src="images\Sales Performance each Region.png" alt="">
+													</div>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Customer Segmentation</h6>
+												<article class="steps">
+													<ul>
+													<li>Identify Customer segment based on purchasing behavior?</li>
+													<li>What are the Characteristic of the segments?
+														It's practically hard to answer those questions due to the lack of data provided in the dataframe but i still can provide some customer segment based on Sales Method and the Product for example Men's products most likely to be bought by Men and as well as for Women's product, although those are not always the case but that can help segmentation.</li>
+													</ul>
+														<pre>
+															<code class="language-python">
+
+df['customer'] = np.where(df['Product'].str.contains('Men'),'Men','Women')
+cust_segment = df.groupby(['Sales Method','customer',df['Invoice Date'].dt.strftime('%Y-%m')]).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+cust_men = cust_segment.loc[cust_segment['customer']=='Men',['Sales Method','Units Sold']]
+cust_women = cust_segment.loc[cust_segment['customer']=='Women',['Sales Method','Units Sold']]
+in_store_men = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+in_store_women = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+online_men = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+online_women = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+outlet_men = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+outlet_women = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+
+plt.figure(1,figsize=(7,5))
+plt.title('Men\'s and Women\'s Product Sales')
+plt.bar('Sales Method','Units Sold',data=cust_men)
+plt.bar('Sales Method','Units Sold',data=cust_women)
+plt.legend(['Men\'s Product','Women\'s Product'])
+plt.savefig('Sales Method Performance.png',bbox_inches='tight',dpi=300)
+plt.show()
+															</code>
+														</pre>
+														<div id="analysis">
+															<img src="images\Sales Method Performance.png" alt="">
+														</div>
+														<pre>
+															<code class="language-python">
+
+plt.figure(1,figsize=(7,25))
+plt.subplot(311)
+plt.title('In-Store Sales')
+plt.bar('Invoice Date','Units Sold',data=in_store_men)
+plt.bar('Invoice Date','Units Sold',data=in_store_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+plt.subplot(312)
+plt.title('Online Sales')
+plt.bar('Invoice Date','Units Sold',data=online_men)
+plt.bar('Invoice Date','Units Sold',data=online_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+plt.subplot(313)
+plt.title('Outlet Sales')
+plt.bar('Invoice Date','Units Sold',data=outlet_men)
+plt.bar('Invoice Date','Units Sold',data=outlet_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+																
+plt.savefig('Sales Method Performance by Time.png',bbox_inches='tight',dpi=300)
+plt.show()
+															</code>
+														</pre>
+														<div id="analysis">
+															<img src="images\Sales Method Performance by Time.png" alt="">
+														</div>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Profitability Analysis</h6>
+												<article class="steps">
+													<ul>
+														<li>Relation between price and profit?</li>
+														<li>Relation between price and unit sold?</li>
+														<li>Which product are most profitable for company?<br>As in point number 2 about product performance can be seen that most profitable product is Men's street footwear followed by Women's apparel.</li>
+													</ul>
+													<pre>
+														<code class="language-python">
+
+scatter = df.groupby(['Product','Price per Unit']).agg({'Operating Profit':'sum'}).reset_index()
+scatter['Profit(million)'] = scatter['Operating Profit']/1000000
+# Relation between price and profit in million
+plt.figure(1,figsize=(10,8))
+sns.scatterplot(x=scatter['Price per Unit'], y=scatter['Profit(million)'],data=scatter,hue=scatter['Product'],s=100*scatter['Profit(million)'])
+# plt.savefig('rel_price_profit.png',bbox_inches='tight')
+														</code>
+													</pre>
+													<div id="analysis">
+														<img src="images\rel_price_profit.png" alt="">
+													</div>
+													<pre><code class="language-python">
+
+# Relation between price and units sold
+us = df.groupby(['Product','Price per Unit']).agg({'Units Sold':'sum'}).reset_index()
+us['Units Sold(K)'] = us['Units Sold']/1000
+plt.figure(figsize=(10,8))
+sns.scatterplot(x=us['Price per Unit'],y=us['Units Sold(K)'],data=us,hue=us['Product'],s=us['Units Sold(K)']*10)
+plt.savefig('rel_price_unit_sold.png',bbox_inches='tight')
+													</code></pre>
+													<div id="analysis">
+														<img src="images\rel_price_unit_sold.png" alt="">
+													</div>
+												</article>
+											</li>
+										</ol>
 										<div id="analysis">
 											<iframe width="600" height="900" src="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" frameborder="0" style="border:0" allowfullscreen></iframe>									
 										</div>
