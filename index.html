@@ -40,7 +40,7 @@
 						<a href="#" class="icon solid fa-home"><span>Home</span></a>
 						<a href="#work" class="icon solid fa-folder"><span>Work</span></a>
 						<a href="#contact" class="icon solid fa-envelope"><span>Contact</span></a>
-						<a href="https://twitter.com/AlfianKhofi" class="icon brands fa-twitter" target="_blank"><span>Twitter</span></a>
+						<a href="#about" class="icon fa-user" target="_blank"><span>About</span></a>
 					</nav>
 
 				<!-- Main -->
@@ -70,7 +70,6 @@
 										Expected Goals (xG) adalah sebuah metrik dalam sepak bola yang mengukur peluang sebuah tembakan menjadi gol. Nilai xG sendiri berkisar dari 0 hingga 1. Satu artinya pasti menjadi gol dan nol artinya tidak mungkin menjadi gol. 
 									</p>
 									<p>Untuk bisa mengetahui nilai peluang dengan xG saya membuat model machine learning untuk klasifikasi dengan algoritma Gradient Boosting menggunakan data yang saya kumpulkan berkaitan dengan tembakan (shots) di Liga 1. Berikut adalah langkah-langkahnya:</p>
-									<p class="inform">*klik untuk melihat detail setiap langkah</p>
 									<ul class="step">
 										<li>
 											<h6 onclick="toggleArticle(this)" class="langkah">Pengumpulan Data</h6>
@@ -283,6 +282,13 @@ sns.heatmap(cm,annot=True)
 													<div id="img">
 														<img src="images\germany.png" alt="">
 													</div>
+													<p>Di bawah ini adalah grafik performansi xG setiap tim dengan xGF adalah xG yang diakumulasikan dan xGA adalah xG yang dihadapi serta xG difference yaitu selisih antara xGF dan xGA selama fase group stage.</p>
+													<div id="img">
+														<img src="images\xG-chart-fifa-u-17.png" alt="">
+													</div>
+													<div id="img">
+														<img src="images\xG-diff-fifa-u-17.png" alt="">
+													</div>
 												</article>
 											</li>
 											</ul>
@@ -291,7 +297,6 @@ sns.heatmap(cm,annot=True)
 										<h2>Adidas Sales Analysis</h2><br>
 										<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total.</p>
 										<p> Every analysis always began with questions. In order to gain an insight from the data. So, here are the questions:</p>
-										<p class="inform">*click to see the detail for each section</p>
 										<ol>
 											<li>
 												<h6 onclick="toggleArticle(this)"class="langkah">Overall Sales Performance</h6>
@@ -680,7 +685,27 @@ plt.savefig('rel_price_unit_sold.png',bbox_inches='tight')
 									</div>
 								</form>
 							</article>
+							<!-- About -->
+							<article id="about" class="panel">
+								<header>
+									<h2>About Me</h2>
+								</header>
+								<p>Hello, my name is Khofi Alfian. I am a student at Universitas Terbuka currently in 5th Semester majoring Economic Business Management. As a junior data analyst, I bring a dynamic combination of adaptability, analytical thinking, and a passion for creative problem-solving. Known for my fast learning abilities. <br>
 
+								My approach to data analysis is characterized by a creative mindset, allowing me to uncover insights beyond the surface. I am adept at translating complex data sets into actionable strategies, leveraging both my analytical skills and creative thinking to drive informed decision-making. <br>
+									
+								I have demonstrated a commitment to continuous learning and staying abreast of industry trends, ensuring that my skills are always aligned with the latest advancements in data analysis. I thrive in collaborative settings and am enthusiastic about contributing to high-impact projects. <br>
+									
+								With a dedication to excellence, I am poised to make valuable contributions to your team's success.</p>
+								<div class="social">
+									<h4>Socials</h4>
+									<ul>
+										<li><span  class="icon brands fa-twitter"><a href="https://www.twitter.com/AlfianKhofi" target="_blank"  class="link"> Twitter</a></span></li>
+										<li><span  class="icon brands fa-instagram"><a href="https://www.instagram.com/khofialfian" target="_blank"  class="link"> Instagram</a></span></li>
+										<li><span  class="icon brands fa-github"><a href="https://www.github.com/freezycoffee" target="_blank"  class="link"> GitHub</a></span></li>
+									</ul>
+								</div>
+							</article>
 					</div>
 
 				<!-- Footer -->
