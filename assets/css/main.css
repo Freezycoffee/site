@@ -2242,6 +2242,13 @@ input, select, textarea {
 		ol li .steps {
 			display : none;
 		}
-		.inform {
-			font-size : 10px;
+
+		.link {
+			color : black;
+			font-weight : bold;
+			font-size: 18px;
+			text-decoration:none;
+		}
+		.social ul li{
+			list-style-type : none;
 		}
