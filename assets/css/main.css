@@ -2195,7 +2195,7 @@ input, select, textarea {
 		}
 		ol li img {
 			object-fit : cover;
-			width : 60%;
+			width : 100%;
 			height : 60%;
 		}
 
@@ -2258,4 +2258,11 @@ input, select, textarea {
 			border-radius: 20px;
 			font-size: 16px;
 			font-weight:bold;
+		}
+
+		.adidas ul li .preprocess{
+			cursor:pointer;
+		}
+		.adidas ul li article{
+			display:none;
 		}
