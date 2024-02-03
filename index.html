@@ -296,7 +296,43 @@ sns.heatmap(cm,annot=True)
 									<br><br>
 									<li class="adidas">
 										<h2>Adidas Sales Analysis</h2><br>
-										<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total.</p>
+										<ul>
+											<li>
+												<h4 onclick="toggleArticle(this)" class="preprocess">Preprocessing</h4>
+												<article>
+													<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total. Here is how the data looks like before i cleaned. 
+													<pre>
+													<code class="language-python">
+	
+import seaborn as sns
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data = pd.read_excel('Adidas US Sales Datasets.xlsx')
+data.head()
+														</code>
+														</pre>
+														<img src="images\first-look-data.png" alt=""><br>And here is how it looks like after i cleaned.
+														<pre>
+														<code class="language-python">
+			
+data = data.drop(index=[0,1,2],axis=0).drop('Unnamed: 0',axis=1).reset_index(drop=True)
+data.columns = data.iloc[0]
+data = data.drop(index=0,axis=0).reset_index(drop=True)
+
+df = data.copy()
+df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
+df['Total Sales'] = df['Total Sales'].astype('int')
+df['Operating Profit'] = df['Operating Profit'].astype('int')
+df.head()
+														</code>
+														</pre> 
+														<img src="images\cleaned-data.png" alt="">
+												</p>
+												</article>
+											</li>
+										</ul>
 										<p> Every analysis always began with questions. In order to gain an insight from the data. So, here are the questions:</p>
 										<ol>
 											<li>
@@ -310,48 +346,42 @@ sns.heatmap(cm,annot=True)
 													<pre>
 													<code class="language-python">
 
-import seaborn as sns
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
+# Group the data first
+rev = df.groupby(df['Invoice Date'].dt.strftime('%Y-%m')).agg({'Total Sales':'sum','Operating Profit':'sum'}).reset_index()
+rev['total_sales_in_million'] = round(rev['Total Sales']/1000000,2)
+rev['total_profit_in_million'] = round(rev['Operating Profit']/1000000,2)
 
-# First create Dataframe using excel data and Clean the data
-data = pd.read_excel('Adidas US Sales Datasets.xlsx',names=['Retailer','Retailer ID','Invoice Date','Region','State','City','Product','Price per Unit','Units Sold','Total Sales','Operating Profit','Operating Margin','Sales Method'])
-data = data.shift(-4).reset_index().drop('index',axis=1)
-data = data.drop(data.tail(4).index)
-data.to_csv('cleaned_sales_adidas.csv')
-# Read the cleaned data
-df = pd.read_csv('cleaned_sales_adidas.csv')
-df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
-df['Total Sales'] = df['Total Sales'].astype('int')
-df['Operating Profit'] = df['Operating Profit'].astype('int')
+# Plot the data
+fig, ax = plt.subplots(figsize=(22,6))
+ax.plot('Invoice Date','total_sales_in_million',data=rev)
+ax.plot('Invoice Date','total_profit_in_million',data=rev)
+ax.scatter(x=12,y=55.23,color='blue',s=100)
+ax.scatter(x=18,y=78.33,color='blue',s=100)
+plt.grid(linestyle='--',alpha=.6)
+plt.ylabel('Profit & Total Sales in million')
+plt.xlabel('Month')
+plt.title('Profit & Total Sales Over the Years',fontsize=18,fontfamily='monospace',fontweight='bold')
+plt.legend(['Total Sales','Profit'])
+plt.annotate(f"January 2021\n{rev['total_sales_in_million'].values[12]} million \nGrowth {round(((rev['total_sales_in_million'].values[12]-rev['total_sales_in_million'].values[11])/rev['total_sales_in_million'].values[11])*100,2)}% from previous month",
+		xy=(12,58),\
+		xytext=(12,62),\
+		fontsize=11,ha='center',\
+		bbox=dict(boxstyle="round,pad=0.3",fc="none", ec="black", lw=1))
+plt.annotate(f"Peaked at {rev['total_sales_in_million'].values[18]} million \nJuly 2021",
+		xy=(18,78),\
+		fontsize=11,ha='center',\
+		bbox=dict(boxstyle="round,pad=0.3",fc="none", ec="black", lw=1),\
+		xytext=(18,57),\
+		arrowprops = dict(arrowstyle='->',connectionstyle='angle,angleA=0,angleB=90,rad=0.0'))
 
-# Plotting the sales by year
-revenue = df.groupby(df['Invoice Date'].dt.year).agg({'Total Sales':'sum','Operating Profit':'sum'}).reset_index()
-revenue['total_sales_in_million'] = round(revenue['Total Sales']/1000000,2)
-revenue['total_profit_in_million'] = round(revenue['Operating Profit']/1000000,2)
-
-plt.figure(figsize=(7,5))
-plt.title('Profit & Total Sales by Year')
-plt.xlabel('Year')
-plt.ylabel('Profit & Total Sales')
-plt.bar('Invoice Date','total_sales_in_million',data=revenue, tick_label=[2020,2021])
-plt.bar('Invoice Date','total_profit_in_million',data=revenue, tick_label=[2020,2021])
-plt.legend(['Total Sales(mil)','Profit(mil)'])
-plt.savefig('Profit & Total Sales by Year.png',bbox_inches='tight',dpi=300)
+plt.savefig('Profit & Total Sales over the Year.png',bbox_inches='tight',dpi=300)
 plt.show()
 													</code>
 													</pre>
 													</p>
 													<div id="analysis">
-													<img src="images\Profit & Total Sales by Year.png" alt="">
+													<img src="images\Profit & Total Sales over the Year.png" alt="">
 													</div>
-													<table>
-														<tr><th>Year</th><th>Total Sales in Million</th><th>Profit in Million</th></tr>
-														<tr><td class="year">2020</td><td>182.02</td><td>63.38</td></tr>
-														<tr><td class="year">2021</td><td>717.82</td><td>268.76</td></tr>
-													</table>
-													<p>As can be seen both Total Sales and Profit rose roughly more than 200% in 2021 from 2020, probable explanation for this is because there is global pandemic 2020 which affected almost every business in the world. Since the data's coverage is only from 2020 to 2021 it's hard to tell if there are some patterns or anomalies.</p>
 												</article>
 											</li>
 											<li>
@@ -362,33 +392,34 @@ plt.show()
 														<li>Are there any products that have significant drop recently?</li>
 													</ul>
 													<pre><code class="language-python">
-product = df.groupby([df['Invoice Date'].dt.strftime('%Y-%m'),'Product']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+prod = df.groupby([df['Invoice Date'].dt.strftime('%Y-%m'),'Product']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+product = prod.groupby('Product').agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
 product['total_sales_in_million'] = round(product['Total Sales']/1000000,2)
 product['total_profit_in_million'] = round(product['Operating Profit']/1000000,2)
 product['unit_sold_k'] = product['Units Sold']/1000
-														
-plt.title('Profit ,Total Sales, Units Sold by Product')
+prod['total_sales_in_million'] = round(prod['Total Sales']/1000000,2)
+prod['total_profit_in_million'] = round(prod['Operating Profit']/1000000,2)
+prod['unit_sold_k'] = prod['Units Sold']/1000
+width = 0.3
+plt.title('Profit ,Total Sales, Units Sold by Product',fontfamily='monospace',fontweight='bold')
 plt.xlabel('Units Sold, Profit, Total Sales')
 plt.ylabel('Product')
-plt.barh('Product','unit_sold_k',data=product)
-plt.barh('Product','total_sales_in_million',data=product)
-plt.barh('Product','total_profit_in_million',data=product)
+plt.barh(product['Product'].index-width,'unit_sold_k',data=product,height=width,ec='black')
+plt.barh(product['Product'].index,'total_sales_in_million',data=product,height=width,ec='black')
+plt.barh(product['Product'].index+width,'total_profit_in_million',data=product,height=width,ec='black')
+plt.yticks(ticks=[n for n in product['Product'].index],labels=[m for m in product['Product'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+plt.grid(axis='x',linestyle='-.',alpha=.6)
 plt.savefig('Profit ,Total Sales, Units Sold by Product.png',bbox_inches='tight',dpi=300)
 plt.show()
+
 													</code></pre>
 													<div id="analysis">
 														<img src="images\Profit ,Total Sales, Units Sold by Product.png" alt="">
 													</div>
-													<table>
-														<tr><th>Products</th><th>Units Sold in Thousand</th><th>Total Sales in Million</th><th>Profit in Million</th></tr>
-														<tr><td class="product">Men's Street Footwear</td><td>11.919</td><td>3.86</td><td>1.83</td></tr>
-														<tr><td class="product">Women's Apparel</td><td>8.489</td><td>3.07</td><td>0.74</td></tr>
-														<tr><td class="product">Men's Athletic Footwear</td><td>7.791</td><td>2.64</td><td>0.76</td></tr>
-														<tr><td class="product">Women's Athletic Footwear</td><td>6.261</td><td>1.99</td><td>0.71</td></tr>
-														<tr><td class="product">Men's Apparel</td><td>5.902</td><td>2.29</td><td>0.86</td></tr>
-													</table>
-													<p>For seasonal trends here is the code: <pre>
+													<pre>
 														<code class="language-python">
 
 men_apparel = product.loc[product['Product']=="Men's Apparel",['Invoice Date','unit_sold_k','total_sales_in_million','total_profit_in_million']]
@@ -450,10 +481,76 @@ plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='x-smal
 plt.savefig('Men and Women Product by Time.png',bbox_inches='tight',dpi=300)
 plt.show()
 														</code>
-													</pre></p>
+													</pre>
 													<div id="analysis">
 														<img src="images\Men and Women Product by Time.png" alt="">
 													</div>
+													<pre>
+														<code class="language-python">
+		
+df['customer'] = np.where(df['Product'].str.contains('Men'),'Men','Women')
+cust_segment = df.groupby(['Sales Method','customer',df['Invoice Date'].dt.strftime('%Y-%m')]).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+cust = cust_segment.groupby(['customer','Sales Method']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
+cust_men = cust_segment.loc[cust_segment['customer']=='Men',['Sales Method','Units Sold']]
+cust_women = cust_segment.loc[cust_segment['customer']=='Women',['Sales Method','Units Sold']]
+in_store_men = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+in_store_women = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+online_men = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+online_women = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+outlet_men = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+outlet_women = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+cust_m = cust.loc[cust['customer']=='Men',['Sales Method','Units Sold']]
+cust_w = cust.loc[cust['customer']=='Women',['Sales Method','Units Sold']]
+plt.figure(1,figsize=(7,5))
+width = 0.5
+plt.title('Men\'s and Women\'s Product Sales',fontweight='bold',fontsize=18)
+plt.bar(cust_m['Sales Method'].index,'Units Sold',data=cust_m,width=width)
+plt.bar(cust_w['Sales Method'].index,'Units Sold',data=cust_w,width=width)
+plt.legend(['Men\'s Product','Women\'s Product'])
+plt.grid(axis='y',linestyle='--',alpha=.6)
+plt.xticks(ticks=[n for n in cust['Sales Method'].index],labels=[m for m in cust['Sales Method'].values],
+           fontproperties={'family':'monospace',
+                           'size':8})
+plt.savefig('Sales Method Performance.png',bbox_inches='tight',dpi=300)
+plt.show()
+
+																	</code>
+																</pre>
+																<div id="analysis">
+																	<img src="images\Sales Method Performance.png" alt="">
+																</div>
+																<pre>
+																	<code class="language-python">
+		
+plt.figure(1,figsize=(15,21))
+plt.subplot(311)
+plt.title('In-Store Sales')
+plt.plot('Invoice Date','Units Sold',data=in_store_men)
+plt.plot('Invoice Date','Units Sold',data=in_store_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+plt.grid()
+plt.subplot(312)
+plt.title('Online Sales')
+plt.plot('Invoice Date','Units Sold',data=online_men)
+plt.plot('Invoice Date','Units Sold',data=online_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+plt.grid()
+plt.subplot(313)
+plt.title('Outlet Sales')
+plt.plot('Invoice Date','Units Sold',data=outlet_men)
+plt.plot('Invoice Date','Units Sold',data=outlet_women)
+plt.xticks(rotation=45)
+plt.legend(['Men','Women'])
+plt.grid()
+plt.savefig('Sales Method Performance by Time.png',bbox_inches='tight',dpi=300)
+plt.show()
+																	</code>
+																</pre>
+																<div id="analysis">
+																	<img src="images\Sales Method Performance by Time.png" alt="">
+																</div>
 												</article>
 											</li>
 											<li>
@@ -543,72 +640,6 @@ plt.show()
 													<div id="analysis">
 														<img src="images\Sales Performance each Region.png" alt="">
 													</div>
-												</article>
-											</li>
-											<li>
-												<h6 onclick="toggleArticle(this)" class="langkah">Customer Segmentation</h6>
-												<article class="steps">
-													<ul>
-													<li>Identify Customer segment based on purchasing behavior?</li>
-													<li>What are the Characteristic of the segments?
-														It's practically hard to answer those questions due to the lack of data provided in the dataframe but i still can provide some customer segment based on Sales Method and the Product for example Men's products most likely to be bought by Men and as well as for Women's product, although those are not always the case but that can help segmentation.</li>
-													</ul>
-														<pre>
-															<code class="language-python">
-
-df['customer'] = np.where(df['Product'].str.contains('Men'),'Men','Women')
-cust_segment = df.groupby(['Sales Method','customer',df['Invoice Date'].dt.strftime('%Y-%m')]).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
-cust_men = cust_segment.loc[cust_segment['customer']=='Men',['Sales Method','Units Sold']]
-cust_women = cust_segment.loc[cust_segment['customer']=='Women',['Sales Method','Units Sold']]
-in_store_men = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-in_store_women = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
-online_men = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-online_women = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
-outlet_men = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-outlet_women = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
-
-plt.figure(1,figsize=(7,5))
-plt.title('Men\'s and Women\'s Product Sales')
-plt.bar('Sales Method','Units Sold',data=cust_men)
-plt.bar('Sales Method','Units Sold',data=cust_women)
-plt.legend(['Men\'s Product','Women\'s Product'])
-plt.savefig('Sales Method Performance.png',bbox_inches='tight',dpi=300)
-plt.show()
-															</code>
-														</pre>
-														<div id="analysis">
-															<img src="images\Sales Method Performance.png" alt="">
-														</div>
-														<pre>
-															<code class="language-python">
-
-plt.figure(1,figsize=(7,25))
-plt.subplot(311)
-plt.title('In-Store Sales')
-plt.bar('Invoice Date','Units Sold',data=in_store_men)
-plt.bar('Invoice Date','Units Sold',data=in_store_women)
-plt.xticks(rotation=45)
-plt.legend(['Men','Women'])
-plt.subplot(312)
-plt.title('Online Sales')
-plt.bar('Invoice Date','Units Sold',data=online_men)
-plt.bar('Invoice Date','Units Sold',data=online_women)
-plt.xticks(rotation=45)
-plt.legend(['Men','Women'])
-plt.subplot(313)
-plt.title('Outlet Sales')
-plt.bar('Invoice Date','Units Sold',data=outlet_men)
-plt.bar('Invoice Date','Units Sold',data=outlet_women)
-plt.xticks(rotation=45)
-plt.legend(['Men','Women'])
-																
-plt.savefig('Sales Method Performance by Time.png',bbox_inches='tight',dpi=300)
-plt.show()
-															</code>
-														</pre>
-														<div id="analysis">
-															<img src="images\Sales Method Performance by Time.png" alt="">
-														</div>
 												</article>
 											</li>
 											<li>
