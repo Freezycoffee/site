@@ -2263,6 +2263,11 @@ input, select, textarea {
 		.adidas ul li .preprocess{
 			cursor:pointer;
 		}
+
+		.adidas ul li .preprocess:hover{
+			text-decoration: underline;
+			cursor:pointer;
+		}
 		.adidas ul li article{
 			display:none;
 		}
