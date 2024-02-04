@@ -491,14 +491,6 @@ plt.show()
 df['customer'] = np.where(df['Product'].str.contains('Men'),'Men','Women')
 cust_segment = df.groupby(['Sales Method','customer',df['Invoice Date'].dt.strftime('%Y-%m')]).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
 cust = cust_segment.groupby(['customer','Sales Method']).agg({'Total Sales':'sum','Operating Profit':'sum','Units Sold':'sum'}).reset_index()
-cust_men = cust_segment.loc[cust_segment['customer']=='Men',['Sales Method','Units Sold']]
-cust_women = cust_segment.loc[cust_segment['customer']=='Women',['Sales Method','Units Sold']]
-in_store_men = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-in_store_women = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
-online_men = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-online_women = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
-outlet_men = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
-outlet_women = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
 cust_m = cust.loc[cust['customer']=='Men',['Sales Method','Units Sold']]
 cust_w = cust.loc[cust['customer']=='Women',['Sales Method','Units Sold']]
 plt.figure(1,figsize=(7,5))
@@ -522,6 +514,15 @@ plt.show()
 																<pre>
 																	<code class="language-python">
 		
+cust_men = cust_segment.loc[cust_segment['customer']=='Men',['Sales Method','Units Sold']]
+cust_women = cust_segment.loc[cust_segment['customer']=='Women',['Sales Method','Units Sold']]
+in_store_men = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+in_store_women = cust_segment.loc[(cust_segment['Sales Method']=='In-store')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+online_men = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+online_women = cust_segment.loc[(cust_segment['Sales Method']=='Online')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+outlet_men = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Men'),['Invoice Date','customer','Units Sold']]
+outlet_women = cust_segment.loc[(cust_segment['Sales Method']=='Outlet')&(cust_segment['customer']=='Women'),['Invoice Date','customer','Units Sold']]
+
 plt.figure(1,figsize=(15,21))
 plt.subplot(311)
 plt.title('In-Store Sales')
@@ -567,49 +568,70 @@ region = df.groupby(['Region','State']).agg({'Total Sales':'sum','Operating Prof
 region['total_sales_in_million'] = round(region['Total Sales']/1000000,2)
 region['total_profit_in_million'] = round(region['Operating Profit']/1000000,2)
 region['unit_sold_k'] = region['Units Sold']/1000
-															
+
 midwest = region[region['Region']=='Midwest']
 northeast = region[region['Region']=='Northeast']
 south = region[region['Region']=='South']
 west = region[region['Region']=='West']
 southeast = region[region['Region']=='Southeast']
-															
-plt.figure(1,figsize=(10,30))
+width = .3
+
+plt.figure(1,figsize=(10,36))
 plt.subplot(511)
 plt.title('Product Sales in Midwest')
-plt.barh('State','unit_sold_k',data=midwest)
-plt.barh('State','total_sales_in_million',data=midwest)
-plt.barh('State','total_profit_in_million',data=midwest)
+plt.barh(midwest['State'].index-width,'unit_sold_k',data=midwest,height=width)
+plt.barh(midwest['State'].index,'total_sales_in_million',data=midwest,height=width)
+plt.barh(midwest['State'].index+width,'total_profit_in_million',data=midwest,height=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
-															
+plt.yticks(ticks=[n for n in midwest['State'].index],labels=[m for m in midwest['State'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='x',linestyle='--',alpha=.6)
+
 plt.subplot(512)
 plt.title('Product Sales in West')
-plt.barh('State','unit_sold_k',data=west)
-plt.barh('State','total_sales_in_million',data=west)
-plt.barh('State','total_profit_in_million',data=west)
+plt.barh(west['State'].index-width,'unit_sold_k',data=west,height=width)
+plt.barh(west['State'].index,'total_sales_in_million',data=west,height=width)
+plt.barh(west['State'].index+width,'total_profit_in_million',data=west,height=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
-															
+plt.yticks(ticks=[n for n in west['State'].index],labels=[m for m in west['State'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='x',linestyle='--',alpha=.6)
+
 plt.subplot(513)
 plt.title('Product Sales in Northeast')
-plt.barh('State','unit_sold_k',data=northeast)
-plt.barh('State','total_sales_in_million',data=northeast)
-plt.barh('State','total_profit_in_million',data=northeast)
+plt.barh(northeast['State'].index-width,'unit_sold_k',data=northeast,height=width)
+plt.barh(northeast['State'].index,'total_sales_in_million',data=northeast,height=width)
+plt.barh(northeast['State'].index+width,'total_profit_in_million',data=northeast,height=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
-															
+plt.yticks(ticks=[n for n in northeast['State'].index],labels=[m for m in northeast['State'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='x',linestyle='--',alpha=.6)
+
 plt.subplot(514)
 plt.title('Product Sales in South')
-plt.barh('State','unit_sold_k',data=south)
-plt.barh('State','total_sales_in_million',data=south)
-plt.barh('State','total_profit_in_million',data=south)
+plt.barh(south['State'].index-width,'unit_sold_k',data=south,height=width)
+plt.barh(south['State'].index,'total_sales_in_million',data=south,height=width)
+plt.barh(south['State'].index+width,'total_profit_in_million',data=south,height=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
-															
+plt.yticks(ticks=[n for n in south['State'].index],labels=[m for m in south['State'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='x',linestyle='--',alpha=.6)
+
 plt.subplot(515)
 plt.title('Product Sales in Southeast')
-plt.barh('State','unit_sold_k',data=southeast)
-plt.barh('State','total_sales_in_million',data=southeast)
-plt.barh('State','total_profit_in_million',data=southeast)
+plt.barh(southeast['State'].index-width,'unit_sold_k',data=southeast,height=width)
+plt.barh(southeast['State'].index,'total_sales_in_million',data=southeast,height=width)
+plt.barh(southeast['State'].index+width,'total_profit_in_million',data=southeast,height=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
-															
+plt.yticks(ticks=[n for n in southeast['State'].index],labels=[m for m in southeast['State'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='x',linestyle='--',alpha=.6)
+
 plt.savefig('Sales by Region.png',bbox_inches='tight',dpi=300)
 plt.show()
 														</code>
@@ -627,13 +649,19 @@ plt.show()
 													</ul>
 														Next I will compare each region sales performance
 													<pre>
-<code class="language-python">													
+													<code class="language-python">													
 regions = region.groupby('Region').agg({'unit_sold_k':'sum','total_sales_in_million':'sum','total_profit_in_million':'sum'}).reset_index()
-plt.title('Sales Performance of Each Region')
-plt.bar('Region','unit_sold_k',data=regions)
-plt.bar('Region','total_sales_in_million',data=regions)
-plt.bar('Region','total_profit_in_million',data=regions)
+plt.title('Sales Performance of Each Region',fontweight='bold')
+width = .3
+plt.bar(regions['Region'].index-width,'unit_sold_k',data=regions,width=width)
+plt.bar(regions['Region'].index,'total_sales_in_million',data=regions,width=width)
+plt.bar(regions['Region'].index+width,'total_profit_in_million',data=regions,width=width)
 plt.legend(['Units Sold(k)', 'Total Sales(mil)', 'Profit(mil)'],fontsize='small')
+plt.xticks(ticks=[n for n in regions['Region'].index],labels=[m for m in regions['Region'].values],
+			fontproperties={'family':'monospace',
+							'size':8})
+plt.grid(axis='y',linestyle='--',alpha=.6)
+
 plt.savefig('Sales Performance each Region.png',bbox_inches='tight',dpi=300)
 plt.show()
 													</code></pre></p>
