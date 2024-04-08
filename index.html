@@ -709,8 +709,41 @@ plt.savefig('rel_price_unit_sold.png',bbox_inches='tight')
 										</ol>
 											<div  id="analysis"><iframe width="600" height="900" src="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" frameborder="0" style="border:0" allowfullscreen></iframe></div>
 									</li>
+									<li class="smartphone">
+										<h2>Smartphone Analysis</h2><br>
+										<p>This Project is created to help me identified the best smartphone to purchase by doing analysis processes from creating a dataset, build machine learning model and build a dashboard using Power BI. This project also used for showcasing my skills in Data Scrapping, Data Cleaning and Preprocessing as well as Data Visualization using BI tools Power BI. For the full code please check on my <a href="https://github.com/Freezycoffee/smartphone" target="_blank">GitHub Repository</a>. And here are the detailed step by step in this project: </p>
+										<ol>
+											<li>
+												<h6 onclick="toggleArticle(this)"class="langkah">Data Collecting</h6>
+												<article class="steps">
+													<p> For Data Collecting I am using Scrapping technique using BeautifulSoup and requests library from python. The website I am going to scrape from is <a href="https://gsmarena.id" target="_blank">GSMArena</a> as it contains information about phone specifications as well price in Rupiah (Indonesian Currency).
+													</p>
+													<div id="analysis">
+													</div>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Data Preprocessing</h6>
+												<article class="steps">
+													<p>For Data Preprocessing I am Using Microsoft Excel to clean the string data as well as the mixed data type in certain columns. And then for missing values I am using sklearn imputer to impute the missing values. The process of imputing is divided into two which are for categorical columns and numerical columns, for categorical columns I am using SimpleImputer with the most frequent value as imputer, as for numerical columns I am using KNNImputer with number of neighbors is 4.</p>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Build a Predictive Model</h6>
+												<article class="steps">
+													<p>In this step I am using XGBoostRegressor to create a predictive model that can predict the price of smartphone based on certain features. It is a fairly simple model since I do not use hyper-parameter tuning.</p>
+												</article>
+											</li>
+											<li>
+												<h6 onclick="toggleArticle(this)" class="langkah">Build a Dashboard</h6>
+												<article class="steps">
+												<p>For building a dashboard I am using Power BI since it is user-friendly and convenience it is the best BI tools for beginner. By building a dashboard it helps me find the best smartphone to purchase based on certain features that i like with consideration of its price and my budget.</p>
+												</article>
+											</li>
+										</ol>
+											<div  id="analysis"><iframe title="smartphone-report" width="600" height="373.5" src="https://app.powerbi.com/view?r=eyJrIjoiZTFiYTI0NWEtMGU1My00M2I1LTgwNDAtZjUxYjkyNDEzZDAwIiwidCI6IjUwODkxNmEwLTdiODktNDNhMS1hZjRlLTcyZmUxNWFiYTViOSIsImMiOjEwfQ%3D%3D" frameborder="0" allowFullScreen="true"></iframe></div>
+									</li>
 								</ol>
-								
 							</article>
 
 						<!-- Contact -->
@@ -768,7 +801,7 @@ plt.savefig('rel_price_unit_sold.png',bbox_inches='tight')
 
 				<!-- Footer -->
 					<div id="footer">
-							<b>&copy; Khofi Alfian 2023</b>
+							<b>&copy; Khofi Alfian 2024</b>
 					</div>
 
 			</div>
