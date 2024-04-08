@@ -2271,3 +2271,8 @@ input, select, textarea {
 		.adidas ul li article{
 			display:none;
 		}
+
+		article ol .smartphone #analysis{
+			display: flex;
+			justify-content: center;
+		}
