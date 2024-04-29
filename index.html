@@ -8,7 +8,7 @@
 	<head>
 		<title>Khofi Alfian</title>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1"/>
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<link rel="icon" href="images\icons8-puzzle-48.png">
 		<link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css" rel="stylesheet" />
@@ -270,70 +270,12 @@ sns.heatmap(cm,annot=True)
 												</p>
 											</article>
 											</li>
-											<li>
-												<h6 onclick="toggleArticle(this)" class="langkah">Penggunaan Model</h6>
-												<article class="steps">
-													<p>Untuk penggunaan model saya menggunakan untuk melihat performa xG beberapa pertandingan Liga 1, juga seluruh pertandingan dari FIFA U-17 World Cup. Berikut adalah contoh grafik dari pertandingan final U-17 World Cup Antara France melawan Germany. <strong>Anda dapat mencoba xG model yang telah saya buat dengan mengklik tombol di bawah</strong></p>
-													<a class="try" target="_blank" href="https://www.khofialfian.fun"><button class="try">Coba menggunakan xG model</button></a><br><br>
-													<div id="img">
-														<img src="images\final_ger_fra_match.png" alt="">
-													</div>
-													<p>Dari grafik tersebut dapat dilihat Germany mengakumulasi xG sebanyak 2.7 yang artinya paling tidak mereka mencetak 2 gol begitu juga dengan France yang mengakumulasikan xG sebesar 2.49, yang mana adalah benar bahwa di pertandingan tersebut kedua tim mencetak 2 gol. Dan harus menentukan juara dengan adu penalti dimana Germany keluar sebagai kampiun.</p>
-													<p>Di bawah ini adalah shotmap dari seluruh shot tim Germany di FIFA U-17 World Cup 2023 Indonesia. Dapat dilihat dari semua gol yang dicetak tim Germany semuanya dari dalam kotak penalti kecuali satu. Semakin besar titik dalam grafik tersebut menandakan semakin besar peluang xG atau peluang sebuah shot dapat menjadi gol.</p>
-													<div id="img">
-														<img src="images\germany.png" alt="">
-													</div>
-													<p>Di bawah ini adalah grafik performansi xG setiap tim dengan xGF adalah xG yang diakumulasikan dan xGA adalah xG yang dihadapi serta xG difference yaitu selisih antara xGF dan xGA selama fase group stage.</p>
-													<div id="img">
-														<img src="images\xG-chart-fifa-u-17.png" alt="">
-													</div>
-													<div id="img">
-														<img src="images\xG-diff-fifa-u-17.png" alt="">
-													</div>
-												</article>
-											</li>
 											</ul>
+											<a class="try" target="_blank" href="https://www.khofialfian.fun"><button class="try">Coba menggunakan xG model</button></a>
 									<br><br>
 									<li class="adidas">
 										<h2>Adidas Sales Analysis</h2><br>
-										<ul>
-											<li>
-												<h4 onclick="toggleArticle(this)" class="preprocess">Preprocessing</h4>
-												<article>
-													<p>This Project is created using data from <a href="https://www.kaggle.com/datasets/heemalichaudhari/adidas-sales-dataset/" target="_blank">Kaggle datasets</a> which i created dashboard from using <a href="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" target="_blank">Google Looker Studio.</a> The data itself contains 9652 rows and 14 Columns in total. Here is how the data looks like before i cleaned. 
-													<pre>
-													<code class="language-python">
-	
-import seaborn as sns
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-
-data = pd.read_excel('Adidas US Sales Datasets.xlsx')
-data.head()
-														</code>
-														</pre>
-														<img src="images\first-look-data.png" alt=""><br>And here is how it looks like after i cleaned.
-														<pre>
-														<code class="language-python">
-			
-data = data.drop(index=[0,1,2],axis=0).drop('Unnamed: 0',axis=1).reset_index(drop=True)
-data.columns = data.iloc[0]
-data = data.drop(index=0,axis=0).reset_index(drop=True)
-
-df = data.copy()
-df['Invoice Date'] = pd.to_datetime(df['Invoice Date'])
-df['Total Sales'] = df['Total Sales'].astype('int')
-df['Operating Profit'] = df['Operating Profit'].astype('int')
-df.head()
-														</code>
-														</pre> 
-														<img src="images\cleaned-data.png" alt="">
-												</p>
-												</article>
-											</li>
-										</ul>
-										<p> Every analysis always began with questions. In order to gain an insight from the data. So, here are the questions:</p>
+										<p> Every analysis always begin with questions. In order to gain an insight from the data. So, here are the questions:</p>
 										<ol>
 											<li>
 												<h6 onclick="toggleArticle(this)"class="langkah">Overall Sales Performance</h6>
@@ -670,48 +612,12 @@ plt.show()
 													</div>
 												</article>
 											</li>
-											<li>
-												<h6 onclick="toggleArticle(this)" class="langkah">Profitability Analysis</h6>
-												<article class="steps">
-													<ul>
-														<li>Relation between price and profit?</li>
-														<li>Relation between price and unit sold?</li>
-														<li>Which product are most profitable for company?<br>As in point number 2 about product performance can be seen that most profitable product is Men's street footwear followed by Women's apparel.</li>
-													</ul>
-													<pre>
-														<code class="language-python">
-
-scatter = df.groupby(['Product','Price per Unit']).agg({'Operating Profit':'sum'}).reset_index()
-scatter['Profit(million)'] = scatter['Operating Profit']/1000000
-# Relation between price and profit in million
-plt.figure(1,figsize=(10,8))
-sns.scatterplot(x=scatter['Price per Unit'], y=scatter['Profit(million)'],data=scatter,hue=scatter['Product'],s=100*scatter['Profit(million)'])
-# plt.savefig('rel_price_profit.png',bbox_inches='tight')
-														</code>
-													</pre>
-													<div id="analysis">
-														<img src="images\rel_price_profit.png" alt="">
-													</div>
-													<pre><code class="language-python">
-
-# Relation between price and units sold
-us = df.groupby(['Product','Price per Unit']).agg({'Units Sold':'sum'}).reset_index()
-us['Units Sold(K)'] = us['Units Sold']/1000
-plt.figure(figsize=(10,8))
-sns.scatterplot(x=us['Price per Unit'],y=us['Units Sold(K)'],data=us,hue=us['Product'],s=us['Units Sold(K)']*10)
-plt.savefig('rel_price_unit_sold.png',bbox_inches='tight')
-													</code></pre>
-													<div id="analysis">
-														<img src="images\rel_price_unit_sold.png" alt="">
-													</div>
-												</article>
-											</li>
 										</ol>
 											<div  id="analysis"><iframe width="600" height="900" src="https://lookerstudio.google.com/embed/reporting/72a52e0a-b28d-42fa-beca-adddf4dfeac8/page/1M" frameborder="0" style="border:0" allowfullscreen></iframe></div>
 									</li>
 									<li class="smartphone">
 										<h2>Smartphone Analysis</h2><br>
-										<p>This Project was created to help me identify the best smartphone to purchase by doing analysis processes from creating a dataset, building machine learning model and building a dashboard using Power BI. This project was also used for showcasing my skills in Data Scrapping, Data Cleaning and Preprocessing as well as Data Visualization using BI tools Power BI. For the full code please check on my <a href="https://github.com/Freezycoffee/smartphone" target="_blank">GitHub Repository</a> or check this <a href="https://docs.google.com/presentation/d/1NoY-jM2IIRj4RiH6jlubPLaXEjbwEEYR/edit?usp=drive_link&ouid=103868655874933571969&rtpof=true&sd=true" target="_blank">Power point</a> for more project details. And here are the detailed step by step in this project: </p>
+										<p>This Project was created to help me identify the best smartphone to purchase by doing analysis processes from creating a dataset, building machine learning model and building a dashboard using Power BI. This project was also used for showcasing my skills in Data Scrapping, Data Cleaning and Preprocessing as well as Data Visualization using BI tools Power BI. For the full code please check on my <a href="https://github.com/Freezycoffee/smartphone" target="_blank">GitHub Repository</a>. And here are the detailed step by step in this project: </p>
 										<ol>
 											<li>
 												<h6 onclick="toggleArticle(this)"class="langkah">Data Collecting</h6>
